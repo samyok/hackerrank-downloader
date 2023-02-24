@@ -3,6 +3,7 @@ const puppeteer = require("puppeteer");
 const axios = require("axios");
 
 const slug = "birdso2023-cybersec-c-sat-feb";
+const start_time = 1676120340000;
 
 const getWSUrl = async () => {
   return new Promise((resolve, reject) => {
@@ -44,17 +45,17 @@ const getSubmissions = async () => {
 
     console.log("doing page",  page.url());
 
-    const pg = await page.evaluate(() => {
+    const pg = await page.evaluate((start_time) => {
       return [...document.querySelectorAll(".judge-submissions-list-view")].map(tr => ({
         user: tr.querySelector("div:nth-child(2)").innerText,
         time: tr.querySelector("div:nth-child(5)").innerText,
         score: tr.querySelector("div:nth-child(7)").innerText,
         link: tr.querySelector(".span1 a").href,
-        date: new Date(1676120340000 + parseInt(tr.querySelector("div:nth-child(5)").innerText) * 60 * 1000).getTime(),
+        date: new Date(start_time + parseInt(tr.querySelector("div:nth-child(5)").innerText) * 60 * 1000).getTime(),
         problem: tr.querySelector("a").href.split("/").pop(),
       }))
 
-    });
+    }, start_time);
 
 
     const hasNoMorePages = await page.evaluate(() => {
